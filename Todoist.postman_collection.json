@@ -1,0 +1,1368 @@
+{
+	"info": {
+		"_postman_id": "937d95c3-2d77-0ad2-fe1e-ce47950636b7",
+		"name": "Todoist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Install BDD and Load Test Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6290cdab-6ade-4f9b-8d4f-c1a88c82315a",
+						"type": "text/javascript",
+						"exec": [
+							"postman.setGlobalVariable('postmanBDD', responseBody);",
+							"",
+							"postman.setGlobalVariable(\"loadData\", function loadSchemas() {",
+							"    let utils = {};",
+							"",
+							"    utils.projectSchema = {",
+							"            \"required\": [",
+							"              \"id\",",
+							"              \"name\",",
+							"              \"order\",",
+							"              \"indent\",",
+							"              \"comment_count\"",
+							"            ],",
+							"            \"properties\": {",
+							"              \"id\": {        ",
+							"                \"type\": \"integer\"       ",
+							"              },",
+							"              \"name\": {        ",
+							"                \"type\": \"string\"",
+							"              },",
+							"              \"order\": {        ",
+							"                \"type\": \"integer\"       ",
+							"              },",
+							"              \"indent\": {        ",
+							"                \"type\": \"integer\"       ",
+							"              },",
+							"              \"comment_count\": {        ",
+							"                \"type\": \"integer\"       ",
+							"              }",
+							"            }",
+							"        }",
+							"        ",
+							"    utils.taskSchema = {  ",
+							"      \"required\": [",
+							"        \"id\",",
+							"        \"project_id\",",
+							"        \"content\",",
+							"        \"completed\",",
+							"        \"order\",",
+							"        \"priority\",",
+							"        \"indent\",",
+							"        \"comment_count\"",
+							"      ],",
+							"      \"properties\": {",
+							"        \"id\": {      ",
+							"          \"type\": \"integer\"                  ",
+							"        },",
+							"        \"project_id\": {      ",
+							"          \"type\": \"integer\"                 ",
+							"        },",
+							"        \"content\": {      ",
+							"          \"type\": \"string\"      ",
+							"        },",
+							"        \"completed\": {      ",
+							"          \"type\": \"boolean\"                  ",
+							"        },",
+							"        \"label_ids\": {      ",
+							"          \"type\": \"array\"      ",
+							"        },",
+							"        \"order\": {      ",
+							"          \"type\": \"integer\"                 ",
+							"        },",
+							"        \"indent\": {      ",
+							"          \"type\": \"integer\"                 ",
+							"        },",
+							"        \"priority\": {      ",
+							"          \"type\": \"integer\"                ",
+							"        },",
+							"        \"comment_count\": {      ",
+							"          \"type\": \"integer\"                ",
+							"        },",
+							"        \"url\": {      ",
+							"          \"type\": \"string\"      ",
+							"        }",
+							"      }",
+							"    };",
+							"        ",
+							"    utils.testProjectName = \"Test Project Example\"",
+							"    utils.updatedProjectName = \"Updated Project Example Name\"",
+							"    ",
+							"    utils.testTaskName = \"Test Task Example\"",
+							"    utils.updatedTaskName = \"Updated value for task example\"",
+							"",
+							"    return utils;",
+							"",
+							"} + '; loadSchemas();');",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://bigstickcarpet.com/postman-bdd/dist/postman-bdd.min.js",
+					"protocol": "http",
+					"host": [
+						"bigstickcarpet",
+						"com"
+					],
+					"path": [
+						"postman-bdd",
+						"dist",
+						"postman-bdd.min.js"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c3cc5475-8e83-4bb3-831d-3d55b81d1e01",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"const expectedProject = \"Personal\"",
+							"let testData = eval(globals.loadData);",
+							"var projectSchema = testData.projectSchema;",
+							"",
+							"function isNameInArray(array, nameValue)",
+							"{",
+							"    found = false;",
+							"    array.forEach(element  => {",
+							"        if(element.name == nameValue )",
+							"        {",
+							"            found = true;",
+							"        }",
+							"    });",
+							"    return found;",
+							"}",
+							" ",
+							"",
+							"// Test Suite",
+							"describe(\"Validate Project Data\", () => {",
+							"   it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response[0], projectSchema)).to.be.true;",
+							"   });",
+							"   it(\"List of projects should be an array\", () => {",
+							"       expect(Array.isArray(response.body)).to.be.true;",
+							"   });",
+							"    it('Should contain the \"Personal\" project name since it is part of the base content', () => {",
+							"       expect(isNameInArray(response.body,expectedProject)).to.be.true;",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200)",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0c82acad-ca86-4b53-9e28-be68cf987f6f",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var projectSchema = testData.projectSchema;",
+							"const testName = testData.testProjectName;",
+							"",
+							"",
+							"describe(\"Validate Project Data\", () => {",
+							"   it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response.body, projectSchema)).to.be.true;",
+							"   });",
+							"    it(`Should have test name ${testName} Assigned`, () => {",
+							"       expect(response.body.name).to.equals(testName);",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200);",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000);",
+							"   });",
+							"});",
+							"pm.environment.set(\"projectId\",response.body.id);"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "669c17e0-68ce-4914-a827-81ff65a01fde",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const testProjectName = testData.testProjectName;",
+							"pm.environment.set(\"testProjectName\",testProjectName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\" : \"{{testProjectName}}\"}\t"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6deb23f3-c150-4f5b-88ad-7e2a9b488cee",
+						"type": "text/javascript",
+						"exec": [
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var projectSchema = testData.projectSchema;",
+							"const testName = testData.testProjectName;",
+							"",
+							"var foundName = response.body.name;",
+							"",
+							"describe(\"Get a Project\", () => {",
+							"   it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response.body, projectSchema)).to.be.true;",
+							"   });",
+							"   it(\"Should have the correct Project Name\", () => {",
+							"       expect(foundName).to.equals(testName)",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200)",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects/{{projectId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "05ceaa82-8b2d-43c9-a3d8-3d379695cdbf",
+						"type": "text/javascript",
+						"exec": [
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"",
+							"const testName = testData.testProjectName;",
+							"",
+							"",
+							"describe(\"Update a Project\", () => {",
+							"   it(\"Should return an http 204 response\", () => {",
+							"        expect(response.status).to.equals(204)",
+							"   });",
+							"   ",
+							"    it(\"Should have an empty body\", () => {",
+							"        expect(response.body).to.be.empty;",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b760d9bf-4b2a-4d0f-bbd4-01f5049ae80e",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const updatedProjectName = testData.updatedProjectName;",
+							"pm.environment.set(\"updatedProjectName\",updatedProjectName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\": \"{{updatedProjectName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects/{{projectId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project Validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5dd1feaf-536d-465b-a048-3597c71926ed",
+						"type": "text/javascript",
+						"exec": [
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"",
+							"const updatedProjectName = testData.updatedProjectName;",
+							"var foundName = response.body.name;",
+							"",
+							"describe(\"Update a Project validation \", () => {",
+							"   it(`Should have the updated Project Name${updatedProjectName}`, () => {",
+							"       expect(foundName).to.equals(updatedProjectName)",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200)",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects/{{projectId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "659e13c4-59b8-428c-98cb-ee57692e9b34",
+						"type": "text/javascript",
+						"exec": [
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"",
+							"const testName = testData.testProjectName;",
+							"var foundName = response.body.name;",
+							"",
+							"describe(\"Delete a Project\", () => {",
+							"    it(\"Should have an empty body\", () => {",
+							"        expect(response.body).to.be.empty;",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects/{{projectId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Project Validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "071e7afd-99d9-4c43-ab50-b45c200553b1",
+						"type": "text/javascript",
+						"exec": [
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var projectSchema = testData.projectSchema;",
+							"const testName = testData.testProjectName;",
+							"",
+							"var foundName = response.body.name;",
+							"",
+							"describe(\"Validate Delete Project\", () => {",
+							"   it(\"Should return 'Not found' since object no longer exists\", () => {",
+							"       expect(response.body).to.contain(\"Not Found\")",
+							"   });",
+							"   it(\"Should return notFound status response\", () => {",
+							"        expect(response.notFound).to.equals(true)",
+							"   });",
+							"   it(\"Should return an http 404 response\", () => {",
+							"        expect(response.status).to.equals(404)",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/projects/{{projectId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active Tasks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f6bd8333-64b4-4b39-ad86-57024d292419",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"const expectedTask = \"Task1\"",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"",
+							"function isContentInArray(array, contentValue)",
+							"{",
+							"    found = false;",
+							"    array.forEach(element  => {",
+							"        if(element.content == contentValue )",
+							"        {",
+							"            found = true;",
+							"        }",
+							"    });",
+							"    return found;",
+							"}",
+							" ",
+							"",
+							"// Test Suite",
+							"describe(\"Validate Active Tasks\", () => {",
+							"   it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response[0], taskSchema)).to.be.true;",
+							"   });",
+							"   it(\"List of Tasks should be an array\", () => {",
+							"       expect(Array.isArray(response.body)).to.be.true;",
+							"   });",
+							"    it(`Should contain the initial \"${expectedTask}\"\" Task name since it is part of the base content`, () => {",
+							"       expect(isContentInArray(response.body,expectedTask)).to.be.true;",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200)",
+							"   });",
+							"   it(\" Time is less than 1000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(1000)",
+							"   });",
+							"});",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de52a2ac-1730-4cbc-a8be-7a5dbca1cf4b",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const testTaskName = testData.testTaskName;",
+							"",
+							"describe(\"Create a new Task\", () => {",
+							"   it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response.body, taskSchema)).to.be.true;",
+							"   });",
+							"    it(`Should have content ${testTaskName} Assigned`, () => {",
+							"       expect(response.body.content).to.equals(testTaskName);",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200);",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});",
+							"",
+							"pm.environment.set(\"taskId\",response.body.id);",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4f3d9d7b-7a4d-4e61-aab8-99c39c8b11f7",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const testTaskName = testData.testTaskName;",
+							"pm.environment.set(\"testTaskName\",testTaskName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{testTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8b38951e-5f81-4f68-8f38-7e14ccfa7fe5",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const testTaskName = testData.testTaskName;",
+							"",
+							"describe(\"Get a Task\", () => {",
+							"   it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response.body, taskSchema)).to.be.true;",
+							"   });",
+							"    it(`Should have content ${testTaskName} Assigned`, () => {",
+							"       expect(response.body.content).to.equals(testTaskName);",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200);",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ba8e24d6-2ad6-4ab8-adb6-b069d5b8b6fe",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{testTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e81bc562-9696-43cf-8d93-1806af2dbb21",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Update a Task\", () => {",
+							"    it(\"Should return an http 204 response\", () => {",
+							"        expect(response.status).to.equals(204)",
+							"   });",
+							"   ",
+							"    it(\"Should have an empty body\", () => {",
+							"        expect(response.body).to.be.empty;",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "01a06b18-84b2-425d-8fe0-1010acd7e929",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"pm.environment.set(\"updatedTaskName\",updatedTaskName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{updatedTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a task validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9a348b65-6e31-4aa5-83d9-8c40f801b1d5",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Validate Task was Updated\", () => {",
+							"  it(\"Should have the correct schema\", () => {",
+							"       expect(tv4.validate(response.body, taskSchema)).to.be.true;",
+							"   });",
+							"    it(`Should have the updated content ${updatedTaskName} Assigned`, () => {",
+							"       expect(response.body.content).to.equals(updatedTaskName);",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200);",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "01a06b18-84b2-425d-8fe0-1010acd7e929",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"pm.environment.set(\"updatedTaskName\",updatedTaskName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{updatedTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Close a task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0cb2eab6-f431-4de3-b119-f75d53122b67",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Create a new Task\", () => {",
+							"    it(\"Should return an http 204 response\", () => {",
+							"        expect(response.status).to.equals(204)",
+							"   });",
+							"   ",
+							"    it(\"Should have an empty body\", () => {",
+							"        expect(response.body).to.be.empty;",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "00c93cdf-7fe5-4129-ad3f-927e91b8aca8",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}/close",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}",
+						"close"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Close a Task Validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "58937f1c-1e67-4499-875b-af4576dd4f65",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Validate Task was Closed\", () => {",
+							"   it(\"Should return an http 404 response\", () => {",
+							"        expect(response.status).to.equals(404);",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "01a06b18-84b2-425d-8fe0-1010acd7e929",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"pm.environment.set(\"updatedTaskName\",updatedTaskName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{updatedTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reopen a Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6f9097c7-e0c1-4d1d-9ec0-6bc1545df181",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Reopen a closed task\", () => {",
+							"    it(\"Should return an http 204 response\", () => {",
+							"        expect(response.status).to.equals(204)",
+							"   });",
+							"   ",
+							"    it(\"Should have an empty body\", () => {",
+							"        expect(response.body).to.be.empty;",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b371605f-af7f-4a61-adaf-f4d2910ec64e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}/reopen",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}",
+						"reopen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reopen a Task Validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc062d1a-361a-414a-b0fb-bce6de69dadc",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Create a new Task\", () => {",
+							"    it(`Should have updated content \"${updatedTaskName}\"\" Assigned`, () => {",
+							"       expect(response.body.content).to.equals(updatedTaskName);",
+							"   });",
+							"   it(\"Should return an http 200 response\", () => {",
+							"        expect(response.status).to.equals(200);",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "01a06b18-84b2-425d-8fe0-1010acd7e929",
+						"type": "text/javascript",
+						"exec": [
+							"let testData = eval(globals.loadData);",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"pm.environment.set(\"updatedTaskName\",updatedTaskName);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{updatedTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6f9097c7-e0c1-4d1d-9ec0-6bc1545df181",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Reopen a closed task\", () => {",
+							"    it(\"Should return an http 204 response\", () => {",
+							"        expect(response.status).to.equals(204)",
+							"   });",
+							"   ",
+							"    it(\"Should have an empty body\", () => {",
+							"        expect(response.body).to.be.empty;",
+							"   });",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ee80a2fc-4561-49a3-abc3-ba65b432cb9e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validate Delete a Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4dc6ecd9-1140-41a7-951c-fc9936d0ff0d",
+						"type": "text/javascript",
+						"exec": [
+							"//Setup, functions and test variables",
+							"eval(globals.postmanBDD);",
+							"let testData = eval(globals.loadData);",
+							"var taskSchema = testData.taskSchema;",
+							"const updatedTaskName = testData.updatedTaskName;",
+							"",
+							"describe(\"Create a new Task\", () => {",
+							"    it(\"Should return an http 404 response\", () => {",
+							"        expect(response.status).to.equals(404)",
+							"   });",
+							"  ",
+							"   it(\" Time is less than 3000ms\", () => { ",
+							"       expect(pm.response.responseTime).to.be.below(3000);",
+							"   });",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ead244a4-0d64-41b8-be78-b7d2b85085ee",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"content\" : \"{{updatedTaskName}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/API/v8/tasks/{{taskId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"API",
+						"v8",
+						"tasks",
+						"{{taskId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
